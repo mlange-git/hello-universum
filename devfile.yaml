@@ -1,0 +1,48 @@
+schemaVersion: 2.1.0
+metadata:
+  name: python-hello-world
+attributes:
+  controller.devfile.io/devworkspace-config:
+    name: devworkspace-config
+    namespace: crw
+  controller.devfile.io/scc: container-build
+  controller.devfile.io/storage-type: per-user
+projects:
+  - name: python-hello-world
+    zip:
+      location: https://eclipse-che.github.io/che-devfile-registry/7.74.0/resources/v2/python-hello-world.zip
+components:
+  - container:
+      env:
+        - name: CHE_DASHBOARD_URL
+          value: https://devspaces.apps.sandbox-m3.1530.p1.openshiftapps.com
+        - name: CHE_PLUGIN_REGISTRY_URL
+          value: https://devspaces.apps.sandbox-m3.1530.p1.openshiftapps.com/plugin-registry/v3
+        - name: CHE_PLUGIN_REGISTRY_INTERNAL_URL
+          value: http://plugin-registry.crw.svc:8080/v3
+        - name: CLUSTER_CONSOLE_URL
+          value: https://console-openshift-console.apps.sandbox-m3.1530.p1.openshiftapps.com
+        - name: CLUSTER_CONSOLE_TITLE
+          value: OpenShift console
+        - name: OPENVSX_REGISTRY_URL
+          value: https://open-vsx.org
+      image: quay.io/devfile/universal-developer-image:ubi8-latest
+      memoryLimit: 512Mi
+      mountSources: true
+      sourceMapping: /projects
+      volumeMounts:
+        - name: venv
+          path: /home/user/.venv
+    name: tools
+  - name: venv
+    volume:
+      size: 1G
+commands:
+  - exec:
+      commandLine: python3 hello-world.py
+      component: tools
+      group:
+        kind: run
+      label: Run application
+      workingDir: ${PROJECT_SOURCE}
+    id: run-application
